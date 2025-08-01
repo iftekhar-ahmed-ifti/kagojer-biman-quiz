@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>কাগজের বিমান - IHT মক টেস্ট</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background: #f4f8ff; }
+    h1 { color: #003366; }
+    .hidden { display: none; }
+    .question { margin-bottom: 20px; padding: 10px; background: white; border-radius: 8px; }
+    button { padding: 10px 20px; margin-top: 15px; font-size: 16px; cursor: pointer; background-color: #003366; color: white; border: none; border-radius: 5px; }
+    input[type="text"] { padding: 8px; width: 100%; max-width: 300px; margin-bottom: 10px; }
+    label { display: block; margin: 5px 0; }
+    #result { background: #d1e7dd; padding: 20px; border-radius: 8px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+  <h1>কাগজের বিমান - IHT প্রস্তুতি কুইজ</h1>
+
+  <div id="userinfo">
+    <p>তোমার নাম ও মোবাইল নাম্বার লিখে শুরু করো:</p>
+    <input type="text" id="name" placeholder="তোমার নাম"><br>
+    <input type="text" id="phone" placeholder="মোবাইল নাম্বার"><br>
+    <button onclick="startQuiz()">পরীক্ষা শুরু করো</button>
+  </div>
+
+  <form id="quiz" class="hidden">
+    <div id="questions-container"></div>
+    <button type="button" onclick="calculateScore()">রেজাল্ট দেখাও</button>
+  </form>
+
+  <div id="result" class="hidden"></div>
+
+  <script>
+    const questions = [
+      { q: "১. মানব দেহের রক্তের রঙ কেন লাল?", options: ["হিমোগ্লোবিন", "লাল রক্তকণিকা", "প্রোটিন", "অক্সিজেন"], correct: 0 },
+      { q: "২. দেহে সবচেয়ে বড় গ্রন্থি কোনটি?", options: ["লিভার", "কিডনি", "অগ্ন্যাশয়", "হৃদপিণ্ড"], correct: 0 },
+      { q: "৩. মস্তিষ্কে অক্সিজেন সরবরাহ করে কোন রক্তনালী?", options: ["আর্টারি", "ভেইন", "ক্যাপিলারি", "করোনারি"], correct: 0 },
+      { q: "৪. দেহের কোন অঙ্গে ইনসুলিন উৎপন্ন হয়?", options: ["প্যানক্রিয়াস", "লিভার", "কিডনি", "হার্ট"], correct: 0 },
+      { q: "৫. মানুষের দেহে স্বাভাবিক তাপমাত্রা কত?", options: ["৯৮.৬°F", "৯৬.৪°F", "১০০°F", "৯৭°F"], correct: 0 },
+      { q: "৬. কিডনি রোগে আক্রান্ত রোগীর জন্য সবচেয়ে ভালো ডায়েট কোনটি?", options: ["লো সোডিয়াম", "বেশি প্রোটিন", "বেশি সোডিয়াম", "বেশি ক্যালসিয়াম"], correct: 0 },
+      { q: "৭. রক্তে গ্লুকোজ কমে গেলে কী ঘটে?", options: ["হাইপোগ্লাইসেমিয়া", "হাইপারটেনশন", "হাইপারগ্লাইসেমিয়া", "হাইপোথার্মিয়া"], correct: 0 },
+      { q: "৮. TB রোগ কোন ব্যাকটেরিয়ায় হয়?", options: ["Mycobacterium tuberculosis", "E. coli", "Staphylococcus", "Salmonella"], correct: 0 },
+      { q: "৯. নিউমোনিয়া প্রধানত আক্রান্ত করে কোন অঙ্গ?", options: ["ফুসফুস", "কিডনি", "হার্ট", "যকৃত"], correct: 0 },
+      { q: "১০. HIV কী ধরনের ভাইরাস?", options: ["RNA ভাইরাস", "DNA ভাইরাস", "Retrovirus", "Corona virus"], correct: 2 },
+      { q: "১১. রক্তে ইউরিয়ার পরিমাণ বেড়ে গেলে তাকে কী বলে?", options: ["ইউরেমিয়া", "হেমোফিলিয়া", "ডায়াবেটিস", "লিউকেমিয়া"], correct: 0 },
+      { q: "১২. হিমোগ্লোবিনের প্রধান কাজ কী?", options: ["অক্সিজেন পরিবহন", "গ্লুকোজ তৈরি", "এনজাইম উৎপাদন", "পেশি সংকোচন"], correct: 0 },
+      { q: "১৩. এন্টিবায়োটিক কী ধরনের রোগে কার্যকর?", options: ["ব্যাকটেরিয়াল", "ভাইরাল", "ফাঙ্গাল", "জেনেটিক"], correct: 0 },
+      { q: "১৪. ডেঙ্গু জ্বর সৃষ্টিকারী মশা কোনটি?", options: ["এডিস", "কিউলেক্স", "অ্যানোফেলিস", "ব্ল্যাক ফ্লাই"], correct: 0 },
+      { q: "১৫. টাইফয়েড রোগ হয় কোন ব্যাকটেরিয়ায়?", options: ["Salmonella typhi", "E. coli", "H. pylori", "TB bacillus"], correct: 0 },
+      { q: "১৬. রোগ প্রতিরোধ ক্ষমতাকে কী বলা হয়?", options: ["ইমিউনিটি", "রেজিস্ট্যান্স", "ডিফেন্স", "ইনফেকশন"], correct: 0 },
+      { q: "১৭. ক্যান্সার কোষ কোনভাবে ছড়ায়?", options: ["মেটাস্টাসিস", "মিউটেশন", "বাডিং", "ডিফারেনশিয়েশন"], correct: 0 },
+      { q: "১৮. করোনাভাইরাস প্রথম কোথায় ধরা পড়ে?", options: ["উহান", "লন্ডন", "নিউইয়র্ক", "টোকিও"], correct: 0 },
+      { q: "১৯. প্লাজমা কী?", options: ["রক্তের তরল অংশ", "রক্ত কণিকা", "লিম্ফ", "ইনজাইম"], correct: 0 },
+      { q: "২০. স্টেথোস্কোপ ব্যবহৃত হয় কোন কাজের জন্য?", options: ["হৃদপিণ্ড শোনা", "রক্ত চাপ মাপা", "তাপমাত্রা মাপা", "রক্ত পরীক্ষা"], correct: 0 }
+    ];
+
+    function startQuiz() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      if (!name || !phone) {
+        alert("অনুগ্রহ করে নাম ও মোবাইল নাম্বার দিন।");
+        return;
+      }
+
+      document.getElementById("userinfo").classList.add("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+
+      const container = document.getElementById("questions-container");
+      questions.forEach((q, index) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = <p>${q.q}</p> +
+          q.options.map((opt, i) =>
+            <label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>
+          ).join("");
+        container.appendChild(div);
+      });
+    }
+
+    function calculateScore() {
+      let score = 0;
+      questions.forEach((q, i) => {
+        const answer = document.querySelector(input[name="q${i}"]:checked);
+        if (answer && parseInt(answer.value) === q.correct) {
+          score++;
+        }
+      });
+
+      document.getElementById("quiz").classList.add("hidden");
+      const result = document.getElementById("result");
+      result.innerHTML = <h3>${document.getElementById("name").value}, তুমি পেয়েছো ${score}/20</h3>;
+      result.classList.remove("hidden");
+    }
+  </script>
+
+</body>
+</html>
